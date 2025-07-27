@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router";
 // Import layout
 const AdminLayout = lazy(() => import("@/app/admin/layout"));
 const AuthLayout = lazy(() => import("@/app/auth/layout"));
+import LoadingPage from "@/components/layouts/loading";
 
 // Import auth page
 const LoginPage = lazy(() => import("@/app/auth/login"));
@@ -19,7 +20,7 @@ const withSuspense = (
   Component: React.LazyExoticComponent<React.ComponentType>
 ) => {
   return () => (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <Component />
     </Suspense>
   );

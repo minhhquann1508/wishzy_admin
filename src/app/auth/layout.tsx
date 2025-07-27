@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 const AuthLayout = () => {
   return (
     <div>
-      đây là layout
+      <h1 className="font-bold">Đây là layout</h1>
       <Outlet />
     </div>
   );
