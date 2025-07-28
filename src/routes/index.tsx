@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
     Component: AdminLayout,
     children: [
       { index: true, Component: withSuspense(Dashboard) },
-      { path: "comments", Component: withSuspense(AdminManageCoursePage) },
+      { path: "courses", Component: withSuspense(AdminManageCoursePage) },
     ],
   },
 ]);

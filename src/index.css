@@ -20,3 +20,15 @@ body {
 .custom-orange-spin .ant-spin-dot-item {
   background-color: orange !important;
 }
+
+.ant-menu .ant-menu-submenu-arrow {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 16px;
+  width: 10px;
+  color: currentcolor;
+  transform: translateY(-50%);
+  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.3s;
+  right: 0;
+  left: 90%;
+}

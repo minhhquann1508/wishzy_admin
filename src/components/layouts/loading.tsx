@@ -1,13 +1,13 @@
 import { Spin } from "antd";
-import logoImg from "@/assets/wishzy-logo.jpg";
+import logoImg from "@/assets/wishzy-logo.png";
 
 const LoadingPage = () => {
   return (
-    <div className="flex justify-center items-center w-screen h-screen">
+    <div className="fixed inset-0 z-50 flex justify-center items-center !bg-transparent animate-pulse transition-opacity duration-300">
       <Spin
-        tip={<span className="text-orange-500 text-lg">Đang tải....</span>}
+        tip={<span className="text-orange-500">Đang tải....</span>}
         size="large"
-        className="custom-orange-spin"
+        className="custom-orange-spin !bg-transparent"
       >
         <img src={logoImg} alt="logo" width={160} height={80} />
       </Spin>
