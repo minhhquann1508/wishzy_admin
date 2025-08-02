@@ -1,9 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://68874927071f195ca98017d8.mockapi.io/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -22,9 +20,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      window.location.href = "/";
+    } else {
+      return error.response.data;
     }
-    return Promise.reject(error);
   }
 );
 
