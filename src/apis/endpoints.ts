@@ -6,4 +6,10 @@ export const endpoints = {
   course: {
     getAll: "/courses",
   },
+  user: {
+    getAll: "/user",
+  },
+  instructor: {
+    getInstructorRequest: "/instructor/request-instructor",
+  },
 };
