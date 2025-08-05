@@ -1,6 +1,9 @@
 import MainHeaderComponent from "@/components/layouts/header";
+import Navbar from "@/components/layouts/header";
 import SidebarComponent from "@/components/layouts/sidebar";
 import type { ItemType } from "antd/es/menu/interface";
+import Example from "@/app/admin/dashboard/columum-chart";
+
 
 import { Layout } from "antd";
 import { Outlet } from "react-router";
@@ -15,6 +18,7 @@ import {
   TicketPercent,
   UsersRound,
 } from "lucide-react";
+
 
 const { Content } = Layout;
 
@@ -89,7 +93,9 @@ const AdminLayout = (): React.ReactNode => {
     <Layout>
       <SidebarComponent items={items} />
       <Layout>
-        <MainHeaderComponent />
+        {/*<MainHeaderComponent />*/}
+        <Navbar/>
+        <Example/>
         <Content className="bg-white mt-5 ml-5 pt-5 px-8">
           <Outlet />
         </Content>
