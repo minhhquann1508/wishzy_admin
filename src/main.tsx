@@ -16,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider
+          direction="ltr"
           theme={{
             token: {
               fontFamily: "Be Vietnam Pro, sans-serif",

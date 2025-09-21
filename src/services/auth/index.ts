@@ -21,16 +21,14 @@ export type User = {
 };
 
 export type LoginResponse = {
-  msg?: string;
-  data?: {
-    accessToken?: string;
-    user?: User;
-  };
+  accessToken?: string;
+  user?: User;
 };
 
 export const AuthService = {
-  login: (data: LoginPayload) => {
-    return axiosInstance.post<LoginResponse>(endpoints.auth.login, data);
+  login: async (data: LoginPayload) => {
+    const response = await axiosInstance.post(endpoints.auth.login, data);
+    return response;
   },
   register: (data: RegisterPayload) => {
     return axiosInstance.post(endpoints.auth.register, data);
