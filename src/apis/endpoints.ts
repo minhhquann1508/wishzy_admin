@@ -4,7 +4,8 @@ export const endpoints = {
     register: "/auth/register",
   },
   course: {
-    getAll: "/courses",
+    getAll: "/course",
+    create: "/course",
   },
   user: {
     getAll: "/user",
@@ -12,4 +13,10 @@ export const endpoints = {
   instructor: {
     getInstructorRequest: "/instructor/request-instructor",
   },
+  grade: {
+    createGrade: "/grade",
+    getAll: "/grade",
+    deleteGrade: "/grade/:id",
+  },
+  subject: '/subject'
 };
