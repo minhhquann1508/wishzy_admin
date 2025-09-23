@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,10 +19,11 @@ axiosInstance.interceptors.response.use(
     (res) => res,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
             window.location.href = "/";
         } else {
-            throw new Error(error.response.data.msg);
+            throw new Error(error.response?.data?.msg || error.message);
         }
     }
 );

@@ -1,28 +1,36 @@
 import { Button, Checkbox, Form, Input, message } from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { AuthService, type LoginPayload, type LoginResponse } from "@/services/auth";
-import type { AxiosResponse } from "axios";
+import { AuthService, type LoginPayload } from "@/services/auth";
+import { Link, useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { AuthUtils } from "@/utils/auth";
+import { AxiosError } from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
+
+  const loginMutation = useMutation({
+    mutationFn: (payload: LoginPayload) => AuthService.login(payload),
+    onSuccess: (response) => {
+      const { data } = response;
+      
+      AuthUtils.setToken(data?.accessToken || '');
+      AuthUtils.setUser(data?.user || null);
+
+      message.success('Đăng nhập thành công!');
+      navigate('/admin');
+    },
+    onError: (error: AxiosError<{ msg?: string }>) => {
+      message.error(error.response?.data?.msg || 'Đăng nhập thất bại!');
+    },
+  });
 
   const onFinish = async (values: { username: string; password: string }) => {
-    setSubmitting(true);
-    try {
-      const payload: LoginPayload = {
-        email: values.username,
-        password: values.password,
-      };
-
-      const res: AxiosResponse<LoginResponse> = await AuthService.login(payload);
-      navigate("/admin");
-    } catch (error: any) {
-      console.log(error.message)
-    } finally {
-      setSubmitting(false);
-    }
+    const payload: LoginPayload = {
+      email: values.username,
+      password: values.password,
+    };
+    
+    loginMutation.mutate(payload);
   };
 
   return (
@@ -65,7 +73,7 @@ const LoginPage = () => {
                 type="primary"
                 htmlType="submit"
                 size="large"
-                loading={submitting}
+                loading={loginMutation.isPending}
                 block
             >
               Đăng nhập ngay

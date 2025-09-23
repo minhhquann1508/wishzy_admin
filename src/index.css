@@ -7,14 +7,25 @@
 * {
   margin: 0;
   padding: 0;
-  left: 0;
-  top: 0;
   box-sizing: border-box;
 }
 
-body {
+html, body {
   font-family: "Be Vietnam Pro", sans-serif !important;
   font-style: normal;
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Fix scrollbar position */
+html {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .custom-orange-spin .ant-spin-dot-item {
@@ -31,4 +42,52 @@ body {
   transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.3s;
   right: 0;
   left: 90%;
+}
+
+/* Force Modal close button to always be on the right */
+.ant-modal-close {
+  right: 16px !important;
+  left: auto !important;
+}
+
+/* Ensure modal header has enough padding for the close button */
+.ant-modal-header {
+  padding-right: 48px !important;
+}
+
+/* Force scrollbar to always be on the right side */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure all containers have proper direction */
+#root {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Fix any RTL issues */
+* {
+  direction: ltr !important;
+}
+
+.ant-layout,
+.ant-layout-content,
+.ant-modal,
+.ant-modal-content {
+  direction: ltr !important;
+  text-align: left !important;
 }
