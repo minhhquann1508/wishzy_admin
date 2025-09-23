@@ -16,6 +16,8 @@ const AdminManageCoursePage = lazy(() => import("@/app/admin/courses"));
 const AdminMangeUserPage = lazy(() => import("@/app/admin/users"));
 const AdminMangeGradePage = lazy(() => import("@/app/admin/grades"));
 const SubjectPage = lazy(() => import("@/app/admin/subjects"));
+const ManageStudentPage = lazy(() => import("@/app/admin/students"));
+
 
 // Import intructor
 
@@ -45,6 +47,7 @@ export const router = createBrowserRouter([
       { index: true, Component: withSuspense(Dashboard) },
       { path: "courses", Component: withSuspense(AdminManageCoursePage) },
       { path: "users", Component: withSuspense(AdminMangeUserPage) },
+      { path: "students", Component: withSuspense(ManageStudentPage) },
       { path: "grades", Component: withSuspense(AdminMangeGradePage) },
       { path: "subjects", Component: withSuspense(SubjectPage) },
     ],
