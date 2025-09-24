@@ -19,6 +19,8 @@ const SubjectPage = lazy(() => import("@/app/admin/subjects"));
 
 // Import student page
 const ManageStudentPage = lazy(() => import("@/app/admin/students"));
+const UserDetailPage = lazy(() => import("@/app/admin/students/[id]/edit"));
+const ManageInstructorPage = lazy(() => import("@/app/admin/instructor"));
 
 // Import intructor
 
@@ -48,7 +50,14 @@ export const router = createBrowserRouter([
       { index: true, Component: withSuspense(Dashboard) },
       { path: "courses", Component: withSuspense(AdminManageCoursePage) },
       { path: "users", Component: withSuspense(AdminMangeUserPage) },
-      { path: "students", Component: withSuspense(ManageStudentPage) },
+      {
+        path: "students",
+        children: [
+          { index: true, Component: withSuspense(ManageStudentPage) },
+          { path: ":userId/edit", Component: withSuspense(UserDetailPage) }, 
+        ],
+      },
+      { path: "instructors", Component: withSuspense(ManageInstructorPage) },
       { path: "grades", Component: withSuspense(AdminMangeGradePage) },
       { path: "subjects", Component: withSuspense(SubjectPage) },
     ],
