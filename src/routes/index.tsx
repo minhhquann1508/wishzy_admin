@@ -16,11 +16,10 @@ const AdminManageCoursePage = lazy(() => import("@/app/admin/courses"));
 const AdminMangeUserPage = lazy(() => import("@/app/admin/users"));
 const AdminMangeGradePage = lazy(() => import("@/app/admin/grades"));
 const SubjectPage = lazy(() => import("@/app/admin/subjects"));
-
-// Import student page
 const ManageStudentPage = lazy(() => import("@/app/admin/students"));
 const UserDetailPage = lazy(() => import("@/app/admin/students/[id]/edit"));
 const ManageInstructorPage = lazy(() => import("@/app/admin/instructor"));
+
 
 // Import intructor
 
