@@ -4,7 +4,7 @@ import type { ItemType } from "antd/es/menu/interface";
 
 
 import { Layout } from "antd";
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import {
   BookOpen,
   FileClock,
@@ -23,7 +23,7 @@ const { Content } = Layout;
 const items: ItemType[] = [
   {
     key: "/",
-    label: "Thống kê & báo cáo",
+    label: <Link to="/admin">Thống kê & báo cáo</Link>,
     icon: <LayoutDashboard size={16} />,
   },
   {
@@ -41,8 +41,8 @@ const items: ItemType[] = [
     label: "Quản lý lớp & môn học",
     icon: <Shapes size={16} />,
     children: [
-      { key: "grade", label: "Lớp học" },
-      { key: "subject", label: "Môn học" },
+      { key: "grade", label: <Link to="/admin/grades">Lớp học</Link> },
+      { key: "subject", label: <Link to="/admin/subjects">Môn học</Link> },
     ],
   },
   {
