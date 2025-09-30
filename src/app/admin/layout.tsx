@@ -92,7 +92,7 @@ const AdminLayout = (): React.ReactNode => {
       <SidebarComponent items={items} />
       <Layout>
         <MainHeaderComponent />
-        <Content className="bg-white mt-5 ml-5 pt-5 px-8">
+        <Content className="p-5 px-8">
           <Outlet />
         </Content>
       </Layout>
