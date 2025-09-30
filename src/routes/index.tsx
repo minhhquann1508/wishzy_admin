@@ -17,6 +17,12 @@ const AdminMangeUserPage = lazy(() => import("@/app/admin/users"));
 const AdminMangeGradePage = lazy(() => import("@/app/admin/grades"));
 const SubjectPage = lazy(() => import("@/app/admin/subjects"));
 const ManageStudentPage = lazy(() => import("@/app/admin/students"));
+const UserDetailPage = lazy(() => import("@/app/admin/students/[id]/edit"));
+const ManageInstructorPage = lazy(() => import("@/app/admin/instructor"));
+const BlogManager = lazy(() => import("@/app/admin/blogs"));
+const BlogForm = lazy(() => import("@/app/admin/blogs/create-blog"));
+const BlogEdit = lazy(() => import("@/app/admin/blogs/[slug]"));
+const ManagePostCategoryPage = lazy(() => import("@/app/admin/blogs/post-category"));
 
 
 // Import intructor
@@ -47,9 +53,24 @@ export const router = createBrowserRouter([
       { index: true, Component: withSuspense(Dashboard) },
       { path: "courses", Component: withSuspense(AdminManageCoursePage) },
       { path: "users", Component: withSuspense(AdminMangeUserPage) },
-      { path: "students", Component: withSuspense(ManageStudentPage) },
+      {
+        path: "students",
+        children: [
+          { index: true, Component: withSuspense(ManageStudentPage) },
+          { path: ":userId/edit", Component: withSuspense(UserDetailPage) }, 
+        ],
+      },
+      { path: "instructors", Component: withSuspense(ManageInstructorPage) },
       { path: "grades", Component: withSuspense(AdminMangeGradePage) },
       { path: "subjects", Component: withSuspense(SubjectPage) },
+      { path: "blogs/post-category", Component: withSuspense(ManagePostCategoryPage) },
+      { path: "blogs", 
+        children: [
+          { index: true, Component: withSuspense(BlogManager) },
+          { path: "create", Component: withSuspense(BlogForm) },
+          { path: ":slug", Component: withSuspense(BlogEdit) },
+        ]
+       },
     ],
   },
 ]);
