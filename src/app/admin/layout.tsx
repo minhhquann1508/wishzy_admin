@@ -31,9 +31,9 @@ const items: ItemType[] = [
     label: "Quản lý người dùng",
     icon: <UsersRound size={16} />,
     children: [
-      { key: "student", label: "Học sinh" },
-      { key: "intructor", label: "Giảng viên" },
-      { key: "admin", label: "Quản trị viên" },
+      { key: "student", label: <Link to="/admin/students">Học sinh</Link> },
+      { key: "intructor", label: <Link to="/admin/instructors">Giảng viên</Link> },
+      { key: "admin", label: <Link to="/admin/admins">Quản trị viên</Link> },
     ],
   },
   {
@@ -47,12 +47,12 @@ const items: ItemType[] = [
   },
   {
     key: "manage-course",
-    label: "Quản lý khóa học",
+    label: <Link to="/admin/courses">Quản lý khóa học</Link>,
     icon: <BookOpen size={16} />,
   },
   {
     key: "manage-exam",
-    label: "Quản lý bài kiểm tra",
+    label: <Link to="/admin/exams">Quản lý bài kiểm tra</Link>,
     icon: <FileClock size={16} />,
   },
   {
@@ -60,8 +60,8 @@ const items: ItemType[] = [
     label: "Quản lý giao tiếp",
     icon: <MessagesSquare size={16} />,
     children: [
-      { key: "feedback", label: "Đánh giá" },
-      { key: "course-comment", label: "Bình luận" },
+      { key: "feedback", label: <Link to="/admin/feedbacks">Đánh giá</Link> },
+      { key: "course-comment", label: <Link to="/admin/course-comments">Bình luận</Link> },
     ],
   },
   {
@@ -69,19 +69,19 @@ const items: ItemType[] = [
     label: "Quản lý bài viết",
     icon: <StickyNote size={16} />,
     children: [
-      { key: "post", label: "Danh sách bài viết" },
-      { key: "post-category", label: "Danh mục bài viết" },
-      { key: "post-comment", label: "Bình luận" },
+      { key: "post", label: <Link to="/admin/posts">Danh sách bài viết</Link> },
+      { key: "post-category", label: <Link to="/admin/post-categories">Danh mục bài viết</Link> },
+      { key: "post-comment", label: <Link to="/admin/post-comments">Bình luận</Link> },
     ],
   },
   {
     key: "manage-banner",
-    label: "Quản lý banner",
+    label: <Link to="/admin/banners">Quản lý banner</Link>,
     icon: <Images size={16} />,
   },
   {
     key: "manage-voucher",
-    label: "Quản lý voucher",
+    label: <Link to="/admin/vouchers">Quản lý voucher</Link>,
     icon: <TicketPercent size={16} />,
   },
 ];

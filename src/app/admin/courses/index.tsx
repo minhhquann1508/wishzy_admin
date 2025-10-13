@@ -1,13 +1,13 @@
 import { CourseService } from "@/services/courses";
-import type { CourseDto, ICourse, Level, SaleType } from "@/types/course";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Button, Form, Input, InputNumber, Modal, Select, Switch, DatePicker, message, Col, Row, Tag, Space, Popconfirm, Table } from "antd";
+import type { CourseDto, ICourse, Level } from "@/types/course";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Form, Input, InputNumber, Modal, Select, Switch, message, Col, Row, Tag, Space, Popconfirm, Table, Upload } from "antd";
+import type { UploadFile } from "antd";
 import { useState } from "react";
-import dayjs from "dayjs";
 import { SubjectService } from "@/services/subjects";
 import type { ISubject } from "@/types/subject";
 import CkEditor from "@/components/common/ckEditor";
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useSearchParams } from "react-router";
 import { levelMapping } from "@/constants/constant";
 
@@ -17,6 +17,9 @@ const CoursePage = () => {
   const [open, setOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [editingCourse, setEditingCourse] = useState<ICourse | null>(null);
+  const queryClient = useQueryClient();
 
     // Lấy page và pageSize từ URL, fallback về default values
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -32,7 +35,6 @@ const CoursePage = () => {
   const { data: coursesData, isLoading: isCoursesLoading } = useQuery({
     queryKey: ['courses', currentPage, pageSize],
     queryFn: () => CourseService.getAll(currentPage, pageSize),
-    staleTime: 5 * 60 * 1000,
   });
 
   const createCourseMutation = useMutation({
@@ -40,7 +42,10 @@ const CoursePage = () => {
     onSuccess: () => {
       message.success('Tạo khoá học thành công');
       form.resetFields();
+      setFileList([]);
+      setEditingCourse(null);
       setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
     },
     onError: (error) => {
       message.error('Tạo khoá học thất bại');
@@ -48,13 +53,76 @@ const CoursePage = () => {
     }
   });
 
+  const updateCourseMutation = useMutation({
+    mutationFn: ({ slug, data }: { slug: string; data: CourseDto }) => 
+      CourseService.update(slug, data),
+    onSuccess: () => {
+      message.success('Cập nhật khoá học thành công');
+      form.resetFields();
+      setFileList([]);
+      setEditingCourse(null);
+      setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+    },
+    onError: (error) => {
+      message.error('Cập nhật khoá học thất bại');
+      console.log(error);
+    }
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: (slug: string) => CourseService.delete(slug),
+    onSuccess: () => {
+      message.success('Xóa khoá học thành công');
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+    },
+    onError: (error) => {
+      message.error('Xóa khoá học thất bại');
+      console.log(error);
+    }
+  });
+
   const showModal = () => {
     form.resetFields();
+    setFileList([]);
+    setEditingCourse(null);
+    setOpen(true);
+  };
+
+  const showEditModal = (course: ICourse) => {
+    setEditingCourse(course);
+    
+    const subjectId = typeof course.subject === 'object' && course.subject !== null 
+      ? (course.subject as { _id: string })._id 
+      : course.subject;
+    
+    form.setFieldsValue({
+      courseName: course.courseName,
+      description: course.description,
+      thumbnail: course.thumbnail,
+      price: course.price,
+      status: course.status,
+      level: course.level,
+      totalDuration: course.totalDuration,
+      subject: subjectId,
+    });
+    
+    
+    if (course.thumbnail) {
+      setFileList([{
+        uid: '-1',
+        name: 'thumbnail',
+        status: 'done',
+        url: course.thumbnail,
+      }]);
+    }
     setOpen(true);
   };
 
   const handleCancel = () => {
     form.resetFields();
+    setFileList([]);
+    setEditingCourse(null);
     setOpen(false);
   };
 
@@ -66,26 +134,22 @@ const CoursePage = () => {
         description: values.description,
         thumbnail: values.thumbnail,
         price: values.price,
-        sale: values.saleType && values.saleValue !== undefined ? {
-          saleType: values.saleType as SaleType,
-          value: values.saleValue,
-          saleStartDate: values.saleRange?.[0] ? values.saleRange[0].toDate() : null,
-          saleEndDate: values.saleRange?.[1] ? values.saleRange[1].toDate() : null,
-        } : undefined,
         status: values.status,
         level: values.level as Level,
         totalDuration: values.totalDuration,
         subject: values.subject,
       };
 
-      console.log(payload);
-
       // Basic client-side validation for percent sale
-      // if (payload.sale?.saleType === 'percent' && payload.sale.value > 50) {
-      //   message.error('Giảm giá theo phần trăm không được vượt quá 50%');
-      //   return;
-      // }
-      // createCourseMutation.mutate(payload);
+      if (payload.sale?.saleType === 'percent' && payload.sale.value > 50) {
+        message.error('Giảm giá theo phần trăm không được vượt quá 50%');
+        return;
+      }
+      if (editingCourse) {
+        updateCourseMutation.mutate({ slug: editingCourse.slug, data: payload });
+      } else {
+        createCourseMutation.mutate(payload);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -145,14 +209,14 @@ const CoursePage = () => {
               type="text" 
               icon={<EditOutlined />} 
               size="small"
-              // onClick={() => showEditModal(record)}
+              onClick={() => showEditModal(record)}
             />
             <Popconfirm
               title="Xóa khoá học"
               description="Bạn có chắc chắn muốn xóa khoá học này?"
               onConfirm={(e) => {
                 e?.preventDefault();
-                // handleDelete(record.slug);
+                deleteCourseMutation.mutate(record.slug);
               }}
               onCancel={(e) => e?.preventDefault()}
               okText="Xóa"
@@ -165,7 +229,7 @@ const CoursePage = () => {
                 icon={<DeleteOutlined />} 
                 size="small"
                 danger
-                // loading={deleteGradeMutation.isPending}
+                loading={deleteCourseMutation.isPending}
                 onClick={(e) => e.preventDefault()}
               />
             </Popconfirm>
@@ -187,7 +251,7 @@ const CoursePage = () => {
         rowKey="_id"
         pagination={{
           current: coursesData?.data?.pagination?.currentPage || currentPage,
-          pageSize: coursesData?.data?.pagination?.pageSizes || pageSize,
+          pageSize: coursesData?.data?.pagination?.pageSize || pageSize,
           total: coursesData?.data?.pagination?.totalItems || 0,
           showTotal: (total, range) => 
             `${range[0]}-${range[1]} của ${total} khoá học`,
@@ -206,14 +270,16 @@ const CoursePage = () => {
         }}
       />
       <Modal
-        title="Tạo khoá học mới"
+        title={editingCourse ? "Cập nhật khoá học" : "Tạo khoá học mới"}
         open={open}
         onOk={handleOk}
-        confirmLoading={createCourseMutation.isPending}
+        confirmLoading={createCourseMutation.isPending || updateCourseMutation.isPending}
         onCancel={handleCancel}
-        okText="Tạo"
+        okText={editingCourse ? "Cập nhật" : "Tạo"}
         cancelText="Hủy"
         width={800}
+        centered
+        style={{ top: 20 }}
       >
         <Form
           form={form}
@@ -230,8 +296,21 @@ const CoursePage = () => {
 
           <Row gutter={[16, 0]}>
             <Col span={12}>
-              <Form.Item name="thumbnail" label="Ảnh thumbnail (URL)">
-                <Input placeholder="https://..." />
+              <Form.Item
+                name="subject"
+                label="Môn học"
+                rules={[{ required: true, message: 'Vui lòng chọn môn học' }]}
+              >
+                <Select
+                  placeholder="Chọn môn học"
+                  loading={isSubjectsLoading}
+                  showSearch
+                  optionFilterProp="children"
+                >
+                  {(subjectData?.data?.subjects as ISubject[] | undefined)?.map((s) => (
+                    <Option key={s._id} value={s._id}>{s.subjectName}</Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -245,31 +324,8 @@ const CoursePage = () => {
             </Col>
           </Row>
 
-          <Form.Item label="Giảm giá">
-            <Input.Group compact>
-              <Form.Item name="saleType" noStyle>
-                <Select placeholder="Loại" style={{ width: 120 }} allowClear>
-                  <Option value="percent">Phần trăm</Option>
-                  <Option value="fixed">Cố định</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name="saleValue" noStyle>
-                <InputNumber style={{ width: 'calc(100% - 120px)' }} min={0} placeholder="Giá trị" />
-              </Form.Item>
-            </Input.Group>
-          </Form.Item>
-
-          <Form.Item name="saleRange" label="Thời gian khuyến mãi">
-            <DatePicker.RangePicker
-              className="w-full"
-              showTime
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={(current) => current && current < dayjs().startOf('day')}
-            />
-          </Form.Item>
-
           <Row gutter={[16, 0]}>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item name="level" label="Trình độ">
                 <Select>
                   <Option value="beginner">Cơ bản</Option>
@@ -278,38 +334,51 @@ const CoursePage = () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item name="totalDuration" label="Tổng thời lượng (phút)">
                 <InputNumber className="w-full" min={0} placeholder="0" />
               </Form.Item>
             </Col>
-            <Col span={8}>
-                <Form.Item
-                  name="subject"
-                  label="Môn học"
-                  rules={[{ required: true, message: 'Vui lòng chọn môn học' }]}
-                >
-                  <Select
-                    placeholder="Chọn môn học"
-                    loading={isSubjectsLoading}
-                    showSearch
-                    optionFilterProp="children"
-                  >
-                    {(subjectData?.data?.subjects as ISubject[] | undefined)?.map((s) => (
-                      <Option key={s._id} value={s._id}>{s.subjectName}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
           </Row>
 
           <Form.Item name="description" label="Mô tả">
-            <CkEditor />
+            <CkEditor key={editingCourse?._id || 'new'} />
           </Form.Item>
 
-          <Form.Item name="status" label="Trạng thái" valuePropName="checked">
-            <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
-          </Form.Item>
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <Form.Item name="thumbnail" label="Ảnh thumbnail">
+                <Upload
+                  name="image"
+                  listType="picture-card"
+                  fileList={fileList}
+                  action="http://localhost:8000/api/upload/image"
+                  onChange={({ fileList: newFileList, file }) => {
+                    setFileList(newFileList);
+                    if (file.status === 'done' && file.response) {
+                      form.setFieldValue('thumbnail', file.response.url);
+                    }
+                  }}
+                  onRemove={() => {
+                    form.setFieldValue('thumbnail', undefined);
+                  }}
+                  maxCount={1}
+                >
+                  {fileList.length === 0 && (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="status" label="Trạng thái" valuePropName="checked">
+                <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
+              </Form.Item>  
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </>

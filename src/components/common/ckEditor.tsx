@@ -66,7 +66,6 @@ export default function CkEditor({ value = '', onChange }: CkEditorProps) {
 					TableProperties,
 					TableToolbar
 				],
-				initialData: value || "",
 				licenseKey: LICENSE_KEY,
 				placeholder: 'Type or paste your content here!',
 				table: {
@@ -74,7 +73,7 @@ export default function CkEditor({ value = '', onChange }: CkEditorProps) {
 				}
 			}
 		};
-	}, [cloud, isLayoutReady, value]);
+	}, [cloud, isLayoutReady]);
 
 	return (
 		<div ref={editorRef}>
