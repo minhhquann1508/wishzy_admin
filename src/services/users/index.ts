@@ -10,6 +10,7 @@ export interface User {
   phone?: string;
   dob?: string;
   gender?: string;
+  password?: string;
   verified?: boolean;
   age?: number;
   createdAt?: string;

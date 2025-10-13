@@ -210,10 +210,10 @@ const ManagePostCategoryPage: React.FC = () => {
   };
 
   return (
-    <div style={{ background: "#fff", minHeight: "100vh" }}>
+    <div style={{minHeight: "100vh" }}>
       <div
         style={{
-          padding: "16px 24px",
+          padding: "20px 0",
           borderBottom: "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
@@ -267,11 +267,11 @@ const ManagePostCategoryPage: React.FC = () => {
 
       <div
         style={{
-          padding: "12px 24px",
           borderBottom: "1px solid #f0f0f0",
           display: "flex",
           gap: "12px",
           alignItems: "center",
+          padding: "12px 0px",
         }}
       >
         <Search
@@ -298,7 +298,6 @@ const ManagePostCategoryPage: React.FC = () => {
             showSizeChanger: true,
           }}
           onChange={handleTableChange}
-          style={{ padding: "0 24px" }}
         />
       </Spin>
 

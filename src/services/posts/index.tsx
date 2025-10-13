@@ -13,6 +13,7 @@ export interface Post {
   file?: string;
   status: boolean;
   isFeatured?: boolean;
+  tags?: string[];
   createdBy?: {
     _id: string;
     fullName: string;

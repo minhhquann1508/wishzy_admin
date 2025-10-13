@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -12,11 +13,16 @@ import {
   Col,
   Typography,
   Space,
-  Collapse,
 } from "antd";
-import { UploadOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  UploadOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { BlogService, type Post } from "@/services/posts";
 import { PostCategoryService, type PostCategory } from "@/services/post-category";
+import SEOChecker from "@/components/common/SEOChecker";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -36,6 +42,7 @@ interface BlogFormValues {
   status: boolean;
   isFeatured?: boolean;
   slug?: string;
+  tags?: string[];
 }
 
 const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => {
@@ -45,14 +52,13 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
   const [altText, setAltText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // --- Watch giá trị form để SEO Preview update realtime ---
   const watchTitle = Form.useWatch("title", form);
   const watchDescription = Form.useWatch("description", form);
   const watchSlug = Form.useWatch("slug", form);
+  const watchContent = Form.useWatch("content", form);
 
-  // Hàm chuyển tiếng Việt thành slug
-  const toSlug = (str: string) => {
-    return str
+  const toSlug = (str: string) =>
+    str
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -60,7 +66,6 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
       .replace(/[^a-z0-9\s-]/g, "")
       .trim()
       .replace(/\s+/g, "-");
-  };
 
   useEffect(() => {
     PostCategoryService.getAll()
@@ -81,13 +86,13 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
         status: Boolean(initialData.status),
         isFeatured: Boolean(initialData.isFeatured),
         slug: initialData.slug,
+        tags: initialData.tags || [],
       });
       if (initialData.thumbnail) setPreview(initialData.thumbnail);
       if (initialData.thumbnailAlt) setAltText(initialData.thumbnailAlt);
     }
   }, [initialData]);
 
-  // Tự động tạo slug khi nhập tiêu đề
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!form.getFieldValue("slug")) {
@@ -114,6 +119,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
         thumbnail,
         thumbnailAlt: altText,
         slug: values.slug,
+        tags: values.tags || [],
       };
 
       if (slug) {
@@ -133,7 +139,6 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
 
   return (
     <div>
-      {/* Header sticky */}
       <div
         style={{
           position: "sticky",
@@ -145,13 +150,26 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "#fff",
         }}
       >
-        <Title level={4} style={{ margin: 0 }}>
-          {slug ? `Chỉnh sửa bài viết - ${initialData?.title}` : "Tạo bài viết mới"}
-        </Title>
-        <Button type="primary" onClick={() => form.submit()} loading={loading}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Link to="/admin/blogs">
+            <Button
+              type="default"
+              icon={<ArrowLeftOutlined />}
+              style={{ padding: 0, fontSize: 20 }}
+            />
+          </Link>
+          <Title level={4} style={{ margin: 0 }}>
+            {slug ? `${initialData?.title}` : "Tạo bài viết mới"}
+          </Title>
+        </div>
+        <Button
+          type="primary"
+          style={{ width: 120, height: 40 }}
+          onClick={() => form.submit()}
+          loading={loading}
+        >
           {slug ? "Cập nhật" : "Tạo mới"}
         </Button>
       </div>
@@ -173,43 +191,35 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
               </Form.Item>
 
               <Form.Item
-                label="Mô tả ngắn"
-                name="description"
-                rules={[{ required: true, message: "Nhập mô tả" }]}
-              >
-                <TextArea rows={3} placeholder="Nhập mô tả ngắn" />
-              </Form.Item>
-
-              <Form.Item
                 label="Nội dung"
                 name="content"
                 rules={[{ required: true, message: "Nhập nội dung" }]}
               >
-                <TextArea
-                  rows={14}
-                  placeholder="Nhập nội dung bài viết..."
-                  style={{ fontFamily: "monospace" }}
-                />
+                <TextArea rows={14} placeholder="Nhập nội dung bài viết..." />
               </Form.Item>
 
-              <Form.Item
-                label="Danh mục"
-                name="category"
-                rules={[{ required: true, message: "Chọn danh mục" }]}
-              >
-                <Select placeholder="Chọn danh mục">
-                  {categories.map((c) => (
-                    <Select.Option key={c._id} value={c._id}>
-                      {c.categoryName}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
+              <div style={{ display: "flex", gap: 16 }}>
+                <Form.Item
+                  label="Danh mục"
+                  name="category"
+                  style={{ flex: 1 }}
+                  rules={[{ required: true, message: "Chọn danh mục" }]}
+                >
+                  <Select placeholder="Chọn danh mục">
+                    {categories.map((c) => (
+                      <Select.Option key={c._id} value={c._id}>
+                        {c.categoryName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item label="Người viết" style={{ flex: 1 }}>
+                  <Input value={initialData?.createdBy?.fullName || "Admin"} disabled />
+                </Form.Item>
+              </div>
             </Card>
 
-            {/* Card SEO với preview + collapse */}
-            <Card>
-              <Title level={5}>Xem trước SEO</Title>
+            <Card title="Tối ưu SEO">
               <div
                 style={{
                   padding: 16,
@@ -222,66 +232,57 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
                   style={{
                     color: "#1a0dab",
                     fontSize: 18,
-                    lineHeight: "22px",
                     marginBottom: 4,
                     display: "block",
-                    wordBreak: "break-word",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                   }}
                 >
                   {watchTitle || "Tiêu đề SEO"}
                 </a>
-                <div
-                  style={{
-                    color: "#006621",
-                    fontSize: 14,
-                    marginBottom: 4,
-                    wordBreak: "break-word",
-                  }}
-                >
+                <div style={{ color: "#006621", fontSize: 14, marginBottom: 4 }}>
                   {`www.wishzy.vn/blog/${watchSlug || "duong-dan-bai-viet"}`}
                 </div>
                 <div
                   style={{
                     color: "#545454",
                     fontSize: 14,
-                    marginBottom: 4,
-                    whiteSpace: "normal",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
                   }}
                 >
                   {watchDescription || "Mô tả SEO"}
                 </div>
               </div>
 
-              <Collapse ghost>
-                <Collapse.Panel header="Chỉnh sửa SEO" key="1">
-                  <Form.Item label="Mô tả SEO" name="description">
-                    <TextArea rows={3} placeholder="Nhập mô tả SEO" />
-                  </Form.Item>
+              <Form.Item label="Mô tả SEO" name="description">
+                <TextArea rows={3} placeholder="Nhập mô tả SEO" />
+              </Form.Item>
 
-                  <Form.Item label="Đường dẫn (Slug)" name="slug">
-                    <Input
-                      addonBefore={<p style={{ margin: 0 }}>www.wishzy.vn/blog/</p>}
-                      placeholder="Tùy chỉnh slug (nếu cần)"
-                      onChange={(e) =>
-                        form.setFieldsValue({ slug: toSlug(e.target.value) })
-                      }
-                    />
-                  </Form.Item>
-                </Collapse.Panel>
-              </Collapse>
+              <Form.Item label="Đường dẫn (Slug)" name="slug">
+                <Input
+                  addonBefore="www.wishzy.vn/blog/"
+                  placeholder="Tùy chỉnh slug"
+                  onChange={(e) => form.setFieldsValue({ slug: toSlug(e.target.value) })}
+                />
+              </Form.Item>
+
+              <SEOChecker
+                title={watchTitle || ""}
+                description={watchDescription || ""}
+                slug={watchSlug || ""}
+                content={watchContent || ""}
+              />
             </Card>
           </Col>
 
-          {/* Sidebar */}
           <Col span={8}>
             <Space direction="vertical" style={{ width: "100%" }} size={16}>
               <Card title="Trạng thái">
-                <Form.Item
-                  label="Hiển thị"
-                  name="status"
-                  valuePropName="checked"
-                  initialValue={true}
-                >
+                <Form.Item label="Hiển thị" name="status" valuePropName="checked" initialValue>
                   <Switch checkedChildren="Hiển thị" unCheckedChildren="Ẩn" />
                 </Form.Item>
                 <Form.Item label="Bài viết nổi bật" name="isFeatured" valuePropName="checked">
@@ -327,7 +328,6 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
                       alt={altText || "preview"}
                       style={{
                         width: "100%",
-                        height: "auto",
                         maxHeight: 220,
                         objectFit: "cover",
                       }}
@@ -346,7 +346,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
                         placeholder="Nhập ALT cho ảnh"
                       />
                     </Form.Item>
-                    <Space style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Space style={{ justifyContent: "flex-end", width: "100%" }}>
                       <Button
                         size="small"
                         icon={<EyeOutlined />}
@@ -369,6 +369,17 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
                     </Space>
                   </>
                 )}
+              </Card>
+
+              <Card title="Nhãn">
+                <Form.Item name="tags">
+                  <Select
+                    mode="tags"
+                    style={{ width: "100%" }}
+                    placeholder="Nhập nhãn"
+                    tokenSeparators={[","]}
+                  />
+                </Form.Item>
               </Card>
             </Space>
           </Col>
