@@ -6,6 +6,8 @@ export const endpoints = {
   course: {
     getAll: "/course",
     create: "/course",
+    updateBySlug: (slug: string) => `/course/${slug}`,
+    deleteBySlug: (slug: string) => `/course/${slug}`,
   },
   user: {
     getAll: "/user",
