@@ -49,4 +49,16 @@ export const endpoints = {
     image: "/upload/image",
     video: "/upload/video",
   },
+  chapter: {
+    getByCourseSlug: (courseSlug: string) => `/chapter/${courseSlug}`,
+    create: "/chapter",
+    updateById: (id: string) => `/chapter/${id}`,
+    deleteById: (id: string) => `/chapter/${id}`,
+  },
+  lecture: {
+    getByChapterId: (chapterId: string) => `/lecture/chapter/${chapterId}`,
+    create: "/lecture",
+    updateById: (id: string) => `/lecture/${id}`,
+    deleteById: (id: string) => `/lecture/${id}`,
+  },
 };
