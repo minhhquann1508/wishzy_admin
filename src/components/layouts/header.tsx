@@ -1,78 +1,34 @@
 import {
-    Breadcrumb,
-    Input,
-    Button,
     Space,
+    Layout,
     Avatar,
     Dropdown,
-    Badge,
-    Layout,
     Typography,
-    Menu
 } from 'antd';
-import type { MenuProps } from 'antd'; // Thêm dòng này
-import {
-    HomeOutlined,
-    UserOutlined,
-    SearchOutlined,
-    BellOutlined,
-    SettingOutlined,
-    LogoutOutlined,
-    MailOutlined
-} from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { AuthUtils } from '@/utils/auth';
+import { useNavigate } from 'react-router';
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const Navbar = () => {
-    // Menu dropdown cho thông báo
-    const notificationItems: MenuProps['items'] = [
-        {
-            key: '1',
-            label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <Avatar icon={<MailOutlined />} />
-                    <div>
-                        <Text strong>Bạn có thông báo mới</Text>
-                        <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>10 phút trước</Text>
-                    </div>
-                </div>
-            ),
-        },
-        {
-            key: '2',
-            label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <Avatar icon={<MailOutlined />} />
-                    <div>
-                        <Text strong>Cập nhật hệ thống</Text>
-                        <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>2 giờ trước</Text>
-                    </div>
-                </div>
-            ),
-        },
-    ];
+    const navigate = useNavigate();
+    const user = AuthUtils.getUser();
 
-    // Menu dropdown cho user
-    const userItems: MenuProps['items'] = [
+    const handleLogout = () => {
+        AuthUtils.clearAuth();
+        navigate('/');
+    };
+
+    const userMenuItems: MenuProps['items'] = [
         {
-            key: '1',
-            label: 'Thông tin tài khoản',
-            icon: <UserOutlined />,
-        },
-        {
-            key: '2',
-            label: 'Cài đặt',
-            icon: <SettingOutlined />,
-        },
-        {
-            type: 'divider',
-        },
-        {
-            key: '3',
+            key: 'logout',
             label: 'Đăng xuất',
             icon: <LogoutOutlined />,
             danger: true,
+            onClick: handleLogout,
         },
     ];
 
@@ -81,70 +37,30 @@ const Navbar = () => {
             background: '#fff',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             padding: '0 16px',
             borderBottom: '1px solid #f0f0f0'
         }}>
-            {/* Phần bên trái - Breadcrumb */}
-            <Breadcrumb
-                items={[
-                    {
-                        href: '',
-                        title: <HomeOutlined />,
-                    },
-                    {
-                        href: '',
-                        title: (
-                            <>
-                                <UserOutlined />
-                                <span>Home</span>
-                            </>
-                        ),
-                    },
-                    {
-                        title: 'Dashboard',
-                    },
-                ]}
-            />
-
-            {/* Phần bên phải - Search và User actions */}
-            <Space size="middle">
-                {/* Thanh tìm kiếm */}
-                <Input
-                    placeholder="Tìm kiếm..."
-                    prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-                    style={{ width: 200 }}
-                    allowClear
-                />
-
-                {/* Nút thông báo */}
-                <Dropdown menu={{ items: notificationItems }} trigger={['click']}>
-                    <Badge count={5} size="small">
-                        <Button
-                            type="text"
-                            shape="circle"
-                            icon={<BellOutlined />}
-                            style={{ color: '#595959' }}
-                        />
-                    </Badge>
-                </Dropdown>
-
-                {/* User dropdown */}
-                <Dropdown menu={{ items: userItems }} trigger={['click']}>
+            <Space>
+                <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: 8,
-                        padding: '4px 8px',
                         cursor: 'pointer',
-                        borderRadius: 4
-                    }}>
-                        <Avatar
-                            size="small"
-                            icon={<UserOutlined />}
+                        padding: '4px 12px',
+                        borderRadius: 6,
+                        transition: 'background 0.3s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                        <Avatar 
+                            size="small" 
+                            icon={<UserOutlined />} 
                             style={{ backgroundColor: '#1890ff' }}
                         />
-                        <Text style={{ display: 'none' }} className="md:block">Nguyễn Văn A</Text>
+                        <Text>{user?.email || 'User'}</Text>
                     </div>
                 </Dropdown>
             </Space>

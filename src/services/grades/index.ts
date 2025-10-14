@@ -7,11 +7,12 @@ export const GradeService = {
         return await axios.post(endpoints.grade.createGrade, grade)
     },
 
-    getAllGrades: async (page?: number, limit?: number, status?: boolean) => {
+    getAllGrades: async (page?: number, limit?: number, status?: boolean, search?: string) => {
         const params = new URLSearchParams();
         if (page) params.append('page', page.toString());
         if (limit) params.append('limit', limit.toString());
         if (status) params.append('status', status.toString());
+        if (search) params.append('gradeName', search);
         
         const url = params.toString() ? `${endpoints.grade.getAll}?${params}` : endpoints.grade.getAll;
         return await axios.get(url);

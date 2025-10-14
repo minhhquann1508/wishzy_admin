@@ -1,10 +1,11 @@
 import { GradeService } from '@/services/grades';
-import { Button, Modal, Form, Input, Switch, message, Table, Tag, Space, Popconfirm } from 'antd';
+import { Button, Modal, Form, Input, Switch, Table, Tag, Space, Popconfirm } from 'antd';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router';
 import type { GradeDto, IGrade } from '@/types/grade';
+import { useMessage } from '@/hooks/useMessage';
 
 const GradePage = () => {
   const [open, setOpen] = useState(false);
@@ -13,15 +14,39 @@ const GradePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [editingGrade, setEditingGrade] = useState<IGrade | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const message = useMessage();
 
-  // Lấy page và pageSize từ URL, fallback về default values
+  // Lấy page, pageSize và search từ URL, fallback về default values
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+  const searchQuery = searchParams.get('search') || '';
+  const [searchValue, setSearchValue] = useState(searchQuery);
 
   const { data: grades, isLoading } = useQuery({
-    queryKey: ['grades', currentPage, pageSize],
-    queryFn: () => GradeService.getAllGrades(currentPage, pageSize, true),
+    queryKey: ['grades', currentPage, pageSize, searchQuery],
+    queryFn: () => GradeService.getAllGrades(currentPage, pageSize, true, searchQuery),
   });
+
+  const handleSearch = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set('search', value);
+    } else {
+      newParams.delete('search');
+    }
+    newParams.set('page', '1');
+    setSearchParams(newParams);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    if (!e.target.value) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('search');
+      newParams.set('page', '1');
+      setSearchParams(newParams);
+    }
+  };
 
   const createGradeMutation = useMutation({
     mutationFn: (gradeData: GradeDto) => GradeService.createGrade(gradeData),
@@ -184,9 +209,20 @@ const GradePage = () => {
     <>
       <div className='flex justify-between items-center mb-4'>
         <h1 className='text-2xl font-bold'>Quản lý lớp học</h1>
-        <Button type="primary" onClick={showModal}>
-          Tạo lớp học
-        </Button>
+        <Space>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên lớp học..."
+            allowClear
+            enterButton={<SearchOutlined />}
+            value={searchValue}
+            onChange={handleSearchChange}
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+          />
+          <Button type="primary" onClick={showModal}>
+            Tạo lớp học
+          </Button>
+        </Space>
       </div>
       
       <Table
