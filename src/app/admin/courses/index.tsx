@@ -7,8 +7,8 @@ import { useState } from "react";
 import { SubjectService } from "@/services/subjects";
 import type { ISubject } from "@/types/subject";
 import CkEditor from "@/components/common/ckEditor";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useSearchParams } from "react-router";
+import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons';
+import { useSearchParams, useNavigate } from "react-router";
 import { levelMapping } from "@/constants/constant";
 
 const { Option } = Select;
@@ -20,6 +20,7 @@ const CoursePage = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [editingCourse, setEditingCourse] = useState<ICourse | null>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
     // Lấy page và pageSize từ URL, fallback về default values
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -202,14 +203,22 @@ const CoursePage = () => {
       {
         title: 'Hành động',
         key: 'actions',
-        width: 120,
+        width: 150,
         render: (_: unknown, record: ICourse) => (
           <Space>
+            <Button 
+              type="text" 
+              icon={<EyeOutlined />} 
+              size="small"
+              onClick={() => navigate(`/admin/courses/${record.slug}`)}
+              title="Chi tiết khoá học"
+            />
             <Button 
               type="text" 
               icon={<EditOutlined />} 
               size="small"
               onClick={() => showEditModal(record)}
+              title="Sửa khoá học"
             />
             <Popconfirm
               title="Xóa khoá học"
