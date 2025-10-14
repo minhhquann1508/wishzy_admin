@@ -3,10 +3,11 @@ import { GradeService } from "@/services/grades";
 import type { SubjectDto, ISubject } from "@/types/subject";
 import type { IGrade } from "@/types/grade";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Form, Input, message, Modal, Select, Switch, Table, Tag, Space, Popconfirm } from "antd"
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, Select, Switch, Table, Tag, Space, Popconfirm } from "antd"
+import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import { useSearchParams } from "react-router";
+import { useMessage } from "@/hooks/useMessage";
 
 const SubjectPage = () => {
     const [open, setOpen] = useState(false);
@@ -15,15 +16,39 @@ const SubjectPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [editingSubject, setEditingSubject] = useState<ISubject | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
+    const message = useMessage();
 
      // Lấy page và pageSize từ URL, fallback về default values
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+    const searchQuery = searchParams.get('search') || '';
+    const [searchValue, setSearchValue] = useState(searchQuery);
 
     const { data: subjects, isLoading } = useQuery({
-        queryKey: ['subjects', currentPage, pageSize],
-        queryFn: () => SubjectService.getAll(currentPage, pageSize, true),
-    }) 
+        queryKey: ['subjects', currentPage, pageSize, searchQuery],
+        queryFn: () => SubjectService.getAll(currentPage, pageSize, true, searchQuery),
+    })
+
+    const handleSearch = (value: string) => {
+        const newParams = new URLSearchParams(searchParams);
+        if (value) {
+            newParams.set('search', value);
+        } else {
+            newParams.delete('search');
+        }
+        newParams.set('page', '1');
+        setSearchParams(newParams);
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value);
+        if (!e.target.value) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete('search');
+            newParams.set('page', '1');
+            setSearchParams(newParams);
+        }
+    }; 
 
     // Fetch grades for the select dropdown
     const { data: grades, isLoading: gradesLoading } = useQuery({
@@ -190,9 +215,20 @@ const SubjectPage = () => {
         <>
             <div className='flex justify-between items-center mb-4'>
                 <h1 className='text-2xl font-bold'>Quản lý môn học</h1>
-                <Button type="primary" onClick={showModal}>
-                    Tạo môn học
-                </Button>
+                <Space>
+                    <Input.Search
+                        placeholder="Tìm kiếm theo tên môn học..."
+                        allowClear
+                        enterButton={<SearchOutlined />}
+                        value={searchValue}
+                        onChange={handleSearchChange}
+                        onSearch={handleSearch}
+                        style={{ width: 300 }}
+                    />
+                    <Button type="primary" onClick={showModal}>
+                        Tạo môn học
+                    </Button>
+                </Space>
             </div>
 
             <Table

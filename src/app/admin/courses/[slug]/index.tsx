@@ -13,7 +13,6 @@ import {
   Switch,
   Table,
   Upload,
-  message,
   Popconfirm,
   Spin,
 } from "antd";
@@ -28,6 +27,7 @@ import {
 import { ChapterService } from "@/services/chapters";
 import { LectureService } from "@/services/lessons";
 import type { IChapter, ChapterDto, LectureDto, ILecture } from "@/types/chapter";
+import { useMessage } from "@/hooks/useMessage";
 
 const { Panel } = Collapse;
 
@@ -35,6 +35,7 @@ const CourseDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const message = useMessage();
   const [chapterForm] = Form.useForm();
   const [lectureForm] = Form.useForm();
 

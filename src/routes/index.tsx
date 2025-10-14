@@ -5,6 +5,8 @@ import { createBrowserRouter } from "react-router";
 const AdminLayout = lazy(() => import("@/app/admin/layout"));
 const AuthLayout = lazy(() => import("@/app/auth/layout"));
 import LoadingPage from "@/components/layouts/loading";
+import ProtectedRoute from "@/components/common/ProtectedRoute";
+import GuestRoute from "@/components/common/GuestRoute";
 
 // Import auth page
 const LoginPage = lazy(() => import("@/app/auth/login"));
@@ -38,10 +40,34 @@ const withSuspense = (
   );
 };
 
+const withProtectedRoute = (
+  Component: React.LazyExoticComponent<React.ComponentType>
+) => {
+  return () => (
+    <ProtectedRoute>
+      <Suspense fallback={<LoadingPage />}>
+        <Component />
+      </Suspense>
+    </ProtectedRoute>
+  );
+};
+
+const withGuestRoute = (
+  Component: React.LazyExoticComponent<React.ComponentType>
+) => {
+  return () => (
+    <GuestRoute>
+      <Suspense fallback={<LoadingPage />}>
+        <Component />
+      </Suspense>
+    </GuestRoute>
+  );
+};
+
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: withSuspense(AuthLayout),
+    Component: withGuestRoute(AuthLayout),
     children: [
       { index: true, Component: withSuspense(LoginPage) },
       { path: "/register", Component: withSuspense(RegisterPage) },
@@ -49,7 +75,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    Component: AdminLayout,
+    Component: withProtectedRoute(AdminLayout),
     children: [
       { index: true, Component: withSuspense(Dashboard) },
       { 

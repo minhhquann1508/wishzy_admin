@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, message } from "antd";
+import { Button, Checkbox, Form, Input, App } from "antd";
 import { AuthService, type LoginPayload } from "@/services/auth";
 import { Link, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
 
   const loginMutation = useMutation({
     mutationFn: (payload: LoginPayload) => AuthService.login(payload),

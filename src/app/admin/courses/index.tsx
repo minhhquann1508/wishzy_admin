@@ -1,15 +1,16 @@
 import { CourseService } from "@/services/courses";
 import type { CourseDto, ICourse, Level } from "@/types/course";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Form, Input, InputNumber, Modal, Select, Switch, message, Col, Row, Tag, Space, Popconfirm, Table, Upload } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Select, Switch, Col, Row, Tag, Space, Popconfirm, Table, Upload, Image } from "antd";
 import type { UploadFile } from "antd";
 import { useState } from "react";
 import { SubjectService } from "@/services/subjects";
 import type { ISubject } from "@/types/subject";
 import CkEditor from "@/components/common/ckEditor";
-import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import { useSearchParams, useNavigate } from "react-router";
 import { levelMapping } from "@/constants/constant";
+import { useMessage } from "@/hooks/useMessage";
 
 const { Option } = Select;
 
@@ -21,10 +22,13 @@ const CoursePage = () => {
   const [editingCourse, setEditingCourse] = useState<ICourse | null>(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const message = useMessage();
 
-    // Lấy page và pageSize từ URL, fallback về default values
+    // Lấy page, pageSize và search từ URL, fallback về default values
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+    const searchQuery = searchParams.get('search') || '';
+    const [searchValue, setSearchValue] = useState(searchQuery);
 
   // Fetch subjects for Select options
   const { data: subjectData, isLoading: isSubjectsLoading } = useQuery({
@@ -34,9 +38,31 @@ const CoursePage = () => {
   });
 
   const { data: coursesData, isLoading: isCoursesLoading } = useQuery({
-    queryKey: ['courses', currentPage, pageSize],
-    queryFn: () => CourseService.getAll(currentPage, pageSize),
+    queryKey: ['courses', currentPage, pageSize, searchQuery],
+    queryFn: () => CourseService.getAll(currentPage, pageSize, undefined, searchQuery),
   });
+
+  const handleSearch = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set('search', value);
+    } else {
+      newParams.delete('search');
+    }
+    newParams.set('page', '1'); // Reset về trang 1 khi search
+    setSearchParams(newParams);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    if (!e.target.value) {
+      // Xóa search khi input rỗng
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('search');
+      newParams.set('page', '1');
+      setSearchParams(newParams);
+    }
+  };
 
   const createCourseMutation = useMutation({
     mutationFn: (courseData: CourseDto) => CourseService.create(courseData),
@@ -157,16 +183,24 @@ const CoursePage = () => {
   };
 
   const columns = [
-      {
-        title: 'STT',
-        key: 'index',
-        width: 60,
-        render: (_: unknown, __: ICourse, index: number) => index + 1,
-      },
-      {
-        title: 'Tên khoá học',
-        dataIndex: 'courseName',
-        key: 'courseName',
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      render: (_: unknown, __: ICourse, index: number) => index + 1,
+    },
+    {
+      title: 'Tên khoá học',
+      dataIndex: 'courseName',
+      key: 'courseName',
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'thumbnail',
+      key: 'thumbnail',
+      render: (thumbnail: string) => (
+        <Image src={thumbnail} alt="Thumbnail" width={50} height={50} />
+      ),
     },
     {
       title: 'Giá (VNĐ)',
@@ -251,7 +285,18 @@ const CoursePage = () => {
     <>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Quản lý khoá học</h1>
-        <Button type="primary" onClick={showModal}>Tạo khoá học</Button>
+        <Space>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên khóa học..."
+            allowClear
+            enterButton={<SearchOutlined />}
+            value={searchValue}
+            onChange={handleSearchChange}
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+          />
+          <Button type="primary" onClick={showModal}>Tạo khoá học</Button>
+        </Space>
       </div>
       <Table
         columns={columns}

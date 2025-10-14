@@ -8,12 +8,12 @@ import {
   Menu,
   Typography,
   Spin,
-  message,
   Modal,
   Form,
   Tag,
   Select,
 } from "antd";
+import { useMessage } from "@/hooks/useMessage";
 import {
   DownOutlined,
   PlusOutlined,
@@ -40,6 +40,7 @@ const roleMap: Record<string, { text: string; color: string }> = {
 };
 
 const ManageStudentPage: React.FC = () => {
+  const message = useMessage();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
