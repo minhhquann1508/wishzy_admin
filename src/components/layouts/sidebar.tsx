@@ -1,6 +1,6 @@
 import { Layout, Menu } from "antd";
 import { Link, useLocation } from "react-router";
-import logoImg from "@/assets/wishzy-logo.png";
+import logoImg from "@/assets/wishzy-logo.jpg";
 import type { ItemType } from "antd/es/menu/interface";
 import { useMemo } from "react";
 

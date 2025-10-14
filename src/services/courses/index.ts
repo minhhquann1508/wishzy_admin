@@ -3,11 +3,12 @@ import { endpoints } from "@/apis/endpoints";
 import type { CourseDto } from "@/types/course";
 
 export const CourseService = {
-  getAll: async (page: number, limit: number, status?: boolean) => {
+  getAll: async (page: number, limit: number, status?: boolean, search?: string) => {
     const params = new URLSearchParams();
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     if (status !== undefined) params.append('status', status.toString());
+    if (search) params.append('courseName', search);
     params.append('orderDate', '-1');
     return await axios.get(endpoints.course.getAll, { params });
   },

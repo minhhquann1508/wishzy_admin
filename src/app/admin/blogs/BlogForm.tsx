@@ -23,6 +23,7 @@ import {
 import { BlogService, type Post } from "@/services/posts";
 import { PostCategoryService, type PostCategory } from "@/services/post-category";
 import SEOChecker from "@/components/common/SEOChecker";
+import CkEditor from "@/components/common/ckEditor"; 
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -195,7 +196,10 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
                 name="content"
                 rules={[{ required: true, message: "Nhập nội dung" }]}
               >
-                <TextArea rows={14} placeholder="Nhập nội dung bài viết..." />
+                <CkEditor
+                  value={form.getFieldValue("content") || ""}
+                  onChange={(data) => form.setFieldsValue({ content: data })}
+                />
               </Form.Item>
 
               <div style={{ display: "flex", gap: 16 }}>

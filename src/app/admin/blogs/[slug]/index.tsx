@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message, Spin } from "antd";
+import { Spin } from "antd";
 import BlogForm from "../BlogForm";
 import { BlogService, type Post } from "@/services/posts";
+import { useMessage } from "@/hooks/useMessage";
 
 const BlogEdit: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const message = useMessage();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Post | null>(null);
 
@@ -27,7 +29,7 @@ const BlogEdit: React.FC = () => {
         })
         .finally(() => setLoading(false));
     }
-  }, [slug]);
+  }, [slug, message, navigate]);
 
   if (loading) return <Spin />;
 
