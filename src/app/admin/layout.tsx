@@ -33,7 +33,7 @@ const items: ItemType[] = [
     children: [
       { key: "student", label: <Link to="/admin/students">Học sinh</Link> },
       { key: "intructor", label: <Link to="/admin/instructors">Giảng viên</Link> },
-      { key: "admin", label: <Link to="/admin/admins">Quản trị viên</Link> },
+      { key: "admin", label: <Link to="/admin/users">Quản trị viên</Link> },
     ],
   },
   {
@@ -70,7 +70,7 @@ const items: ItemType[] = [
     icon: <StickyNote size={16} />,
     children: [
       { key: "post", label: <Link to="/admin/posts">Danh sách bài viết</Link> },
-      { key: "post-category", label: <Link to="/admin/post-categories">Danh mục bài viết</Link> },
+      { key: "post-category", label: <Link to="/admin/posts/post-categories">Danh mục bài viết</Link> },
       { key: "post-comment", label: <Link to="/admin/post-comments">Bình luận</Link> },
     ],
   },

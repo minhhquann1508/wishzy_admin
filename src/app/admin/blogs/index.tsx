@@ -18,7 +18,6 @@ import {
   DeleteOutlined,
   FilterOutlined,
   FileExcelOutlined,
-  EditOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { BlogService, type Post } from "@/services/posts";
@@ -80,8 +79,10 @@ const BlogManager: React.FC = () => {
 
   const filterMenu = (
     <Menu>
-      <Menu.Item key="category">Lọc theo danh mục</Menu.Item>
-      <Menu.Item key="author">Lọc theo tác giả</Menu.Item>
+      <Menu.Item key="status-1">Trạng thái: Hiển thị</Menu.Item>
+      <Menu.Item key="status-2">Trạng thái: Ẩn</Menu.Item>
+      <Menu.Item key="featured-1">Nổi bật: Có</Menu.Item>
+      <Menu.Item key="featured-2">Nổi bật: Không</Menu.Item>
     </Menu>
   );
 
@@ -113,27 +114,28 @@ const BlogManager: React.FC = () => {
         </Tag>
       ),
     },
-    { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt" },
     {
-      title: "Hành động",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          type="link"
-          icon={<EditOutlined />}
-          onClick={() => navigate(`/admin/blogs/${record.slug}/edit`)}
-        >
-          Sửa
-        </Button>
-      ),
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (createdAt: string) => {
+        const date = new Date(createdAt);
+        const formatted = date.toLocaleString("vi-VN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        return formatted;
+      },
     },
   ];
 
   return (
-    <div style={{ background: "#fff", minHeight: "100vh" }}>
+    <div style={{  minHeight: "100vh" }}>
       <div
         style={{
-          padding: "16px 0px",
           borderBottom: "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
@@ -146,13 +148,14 @@ const BlogManager: React.FC = () => {
               Quản lý bài viết
             </Title>
             <Space>
-              <Button icon={<FileExcelOutlined />}>Xuất file</Button>
+              <Button size="large" icon={<FileExcelOutlined />}>Quản lí bình luận</Button>
               <Button
                 type="primary"
+                size="large"
                 icon={<PlusOutlined />}
                 onClick={() => navigate("/admin/blogs/create")}
               >
-                Thêm bài viết
+                Tạo bài viết
               </Button>
             </Space>
           </>
@@ -163,7 +166,7 @@ const BlogManager: React.FC = () => {
             </span>
             <Space>
               <Dropdown overlay={actionMenu} placement="bottomRight">
-                <Button type="primary">
+                <Button size="large" type="primary">
                   Thao tác <DownOutlined />
                 </Button>
               </Dropdown>
@@ -205,7 +208,9 @@ const BlogManager: React.FC = () => {
             b.title.toLowerCase().includes(search.toLowerCase())
           )}
           rowKey="_id"
-          pagination={{ pageSize: 5 }}
+          pagination={{ pageSize: 10, showSizeChanger: false }}
+          style={{ marginTop: 16 }}
+          locale={{ emptyText: "Không có bài viết" }}
         />
       </Spin>
     </div>
