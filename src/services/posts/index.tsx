@@ -110,7 +110,7 @@ export const BlogService = {
 
   uploadImage: async (file: File): Promise<string> => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("image", file);
 
     const res = await axios.post<{ message: string; url: string }>(
       endpoints.upload.image, 

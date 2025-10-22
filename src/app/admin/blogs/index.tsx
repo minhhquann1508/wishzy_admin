@@ -114,7 +114,22 @@ const BlogManager: React.FC = () => {
         </Tag>
       ),
     },
-    { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt" },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (createdAt: string) => {
+        const date = new Date(createdAt);
+        const formatted = date.toLocaleString("vi-VN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        return formatted;
+      },
+    },
   ];
 
   return (
