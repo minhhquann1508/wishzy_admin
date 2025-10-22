@@ -6,7 +6,7 @@ const BlogCreate: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div >
-      <BlogForm onSuccess={() => navigate("/admin/blogs")} />
+      <BlogForm onSuccess={() => navigate("/admin/posts")} />
     </div>
   );
 };

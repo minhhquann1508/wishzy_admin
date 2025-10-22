@@ -96,7 +96,7 @@ const BlogManager: React.FC = () => {
           <Avatar shape="square" size={50} src={record.thumbnail} />
           <span
             style={{ cursor: "pointer", color: "#1890ff" }}
-            onClick={() => navigate(`/admin/blogs/${record.slug}`)}
+            onClick={() => navigate(`/admin/posts/${record.slug}`)}
           >
             {record.title}
           </span>
@@ -153,7 +153,7 @@ const BlogManager: React.FC = () => {
                 type="primary"
                 size="large"
                 icon={<PlusOutlined />}
-                onClick={() => navigate("/admin/blogs/create")}
+                onClick={() => navigate("/admin/posts/create")}
               >
                 Tạo bài viết
               </Button>

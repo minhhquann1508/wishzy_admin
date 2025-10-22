@@ -4,7 +4,11 @@ import { EyeOutlined, FileSearchOutlined } from "@ant-design/icons";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
 
-import { InstructorService, type Instructor, type GetAllInstructorsResponse } from "@/services/instructor";
+import {
+  InstructorService,
+  type Instructor,
+  type GetAllInstructorsResponse,
+} from "@/services/instructor";
 import SearchFilterBar from "@/components/common/SearchFilterBar";
 import type { FilterValues } from "@/components/common/SearchFilterBar";
 import RequestInstructorModal from "./RequestInstructorModal";
@@ -13,6 +17,8 @@ const { Title } = Typography;
 
 const ManageInstructorPage: React.FC = () => {
   const navigate = useNavigate();
+
+  // ===== STATE =====
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
@@ -22,21 +28,18 @@ const ManageInstructorPage: React.FC = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [currentInstructor, setCurrentInstructor] = useState<Instructor | null>(null);
 
-  // Lấy role người dùng từ localStorage
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const role = currentUser?.role;
 
-  // ========================= KIỂM TRA QUYỀN =========================
+  // ===== KIỂM TRA QUYỀN =====
   useEffect(() => {
     if (!["admin", "manager"].includes(role ?? "")) {
       navigate("/admin/no-access", { replace: true });
-    } else {
-      fetchInstructors(1, pagination.pageSize, filters.keyword);
     }
-  }, [role]);
+  }, []); 
 
-  // ========================= FETCH GIẢNG VIÊN =========================
+  // ===== FETCH DỮ LIỆU =====
   const fetchInstructors = async (page = 1, limit = 10, keyword = "") => {
     try {
       setLoading(true);
@@ -61,16 +64,27 @@ const ManageInstructorPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (["admin", "manager"].includes(role ?? "")) {
+      fetchInstructors(pagination.current, pagination.pageSize, filters.keyword);
+    }
+  }, [filters, pagination.current, pagination.pageSize, role]);
+
+  // ===== HANDLER =====
   const handleTableChange = (newPagination: TablePaginationConfig) => {
-    fetchInstructors(newPagination.current ?? 1, pagination.pageSize, filters.keyword);
+    setPagination({
+      ...pagination,
+      current: newPagination.current ?? 1,
+      pageSize: newPagination.pageSize ?? 10,
+    });
   };
 
   const handleFilterChange = (newFilters: FilterValues) => {
     setFilters(newFilters);
-    fetchInstructors(1, pagination.pageSize, newFilters.keyword);
+    setPagination({ ...pagination, current: 1 }); 
   };
 
-  // ========================= COLUMNS TABLE =========================
+  // ===== COLUMNS =====
   const columns: ColumnsType<Instructor> = [
     { title: "Tên giảng viên", dataIndex: "fullName", key: "fullName" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -101,7 +115,7 @@ const ManageInstructorPage: React.FC = () => {
 
   if (!["admin", "manager"].includes(role ?? "")) return null;
 
-  // ========================= RENDER =========================
+  // ===== RENDER =====
   return (
     <div style={{ minHeight: "100vh", paddingBottom: "40px" }}>
       {/* Header + nút modal yêu cầu làm giảng viên */}
@@ -132,7 +146,7 @@ const ManageInstructorPage: React.FC = () => {
         onFilterChange={handleFilterChange}
       />
 
-      {/* Table danh sách giảng viên */}
+      {/* Table */}
       <Spin spinning={loading}>
         <Table
           columns={columns}
