@@ -97,7 +97,7 @@ export const router = createBrowserRouter([
       { path: "instructors", Component: withSuspense(ManageInstructorPage) },
       { path: "grades", Component: withSuspense(AdminMangeGradePage) },
       { path: "subjects", Component: withSuspense(SubjectPage) },
-      { path: "posts/post-categories", Component: withSuspense(ManagePostCategoryPage) },
+      { path: "posts/post-category", Component: withSuspense(ManagePostCategoryPage) },
       { path: "posts", 
         children: [
           { index: true, Component: withSuspense(BlogManager) },
