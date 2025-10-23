@@ -26,6 +26,7 @@ const BlogManager = lazy(() => import("@/app/admin/blogs"));
 const BlogForm = lazy(() => import("@/app/admin/blogs/create-blog"));
 const BlogEdit = lazy(() => import("@/app/admin/blogs/[slug]"));
 const ManagePostCategoryPage = lazy(() => import("@/app/admin/blogs/post-category"));
+const NoAccessPage = lazy(() => import("@/app/admin/noaccesspage"));
 
 
 // Import intructor
@@ -104,6 +105,7 @@ export const router = createBrowserRouter([
           { path: ":slug", Component: withSuspense(BlogEdit) },
         ]
        },
+      { path: "no-access", Component: withSuspense(NoAccessPage) },
     ],
   },
 ]);

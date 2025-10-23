@@ -23,6 +23,17 @@ const MenuComponent = ({ items }: { items: ItemType[] }) => {
     if (pathname.includes('/admin/courses')) return 'manage-course';
     if (pathname.includes('/admin/students')) return 'student';
     if (pathname.includes('/admin/instructors')) return 'intructor';
+    if (pathname.includes('/admin/users')) return 'users';
+    if (pathname.includes('/admin/exams')) return 'manage-exam';
+    if (pathname.includes('/admin/feedbacks')) return 'feedback';
+    if (pathname.includes('/admin/course-comments')) return 'course-comment';
+    if (pathname.includes('/admin/posts')) return 'post';
+    if (pathname.includes('/admin/post-categories')) return 'post-category';
+    if (pathname.includes('/admin/post-comments')) return 'post-comment';
+    if (pathname.includes('/admin/banners')) return 'manage-banner';
+    if (pathname.includes('/admin/vouchers')) return 'manage-voucher';
+    if (pathname.includes('/admin/students')) return 'student';
+    if (pathname.includes('/admin/instructors')) return 'intructor';
     if (pathname.includes('/admin/admins')) return 'admin';
     if (pathname.includes('/admin/exams')) return 'manage-exam';
     if (pathname.includes('/admin/feedbacks')) return 'feedback';
@@ -40,13 +51,13 @@ const MenuComponent = ({ items }: { items: ItemType[] }) => {
     if (pathname.includes('/admin/grades') || pathname.includes('/admin/subjects')) {
       return ['manage-category'];
     }
-    if (pathname.includes('/admin/students') || pathname.includes('/admin/instructors') || pathname.includes('/admin/admins')) {
+    if (pathname.includes('/admin/students') || pathname.includes('/admin/instructors') || pathname.includes('/admin/users')) {
       return ['manage-user'];
     }
     if (pathname.includes('/admin/feedbacks') || pathname.includes('/admin/course-comments')) {
       return ['manage-social'];
     }
-    if (pathname.includes('/admin/posts') || pathname.includes('/admin/post-categories') || pathname.includes('/admin/post-comments')) {
+    if (pathname.includes('/admin/posts') || pathname.includes('/admin/posts/post-categories') || pathname.includes('/admin/post-comments')) {
       return ['manage-blog'];
     }
     return [];

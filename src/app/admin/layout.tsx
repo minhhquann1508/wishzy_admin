@@ -33,7 +33,7 @@ const items: ItemType[] = [
     children: [
       { key: "student", label: <Link to="/admin/students">Học sinh</Link> },
       { key: "intructor", label: <Link to="/admin/instructors">Giảng viên</Link> },
-      { key: "admin", label: <Link to="/admin/admins">Quản trị viên</Link> },
+      { key: "admin", label: <Link to="/admin/users">Quản trị viên</Link> },
     ],
   },
   {

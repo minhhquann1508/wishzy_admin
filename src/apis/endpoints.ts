@@ -11,9 +11,13 @@ export const endpoints = {
   },
   user: {
     getAll: "/user",
+    getOne: (id: string) => `/user/${id}`,
     create: "/user",          
     updateById: (id: string) => `/user/${id}`, 
     deleteById: (id: string) => `/user/${id}`,  
+  },
+  student: {
+    getAllStudents: "/user/students",
   },
   instructor: {
     createInstructorRequest: "/instructor/request",

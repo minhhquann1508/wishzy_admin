@@ -10,12 +10,27 @@ export interface User {
   phone?: string;
   dob?: string;
   gender?: string;
+  password?: string;
   verified?: boolean;
   age?: number;
   createdAt?: string;
   address?: string;
 }
-
+export interface Student {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: string;
+  avatar?: string;
+  phone?: string;
+  dob?: string;
+  gender?: string;
+  password?: string;
+  verified?: boolean;
+  age?: number;
+  createdAt?: string;
+  address?: string;
+}
 // Thông tin chi tiết bổ sung
 export interface PurchasedCourse {
   _id: string;
@@ -54,6 +69,7 @@ export interface UserDetail extends User {
 export interface GetAllUsersResponse {
   msg: string;
   users: User[];
+  students: Student[];
   pagination: {
     currentPage: number;
     totalPages: number;
@@ -74,28 +90,39 @@ export const UserService = {
     limit?: number;
     fullName?: string;
     email?: string;
-    role?: string;
   }): Promise<GetAllUsersResponse> => {
     const res = await axios.get(endpoints.user.getAll, { params });
     return res.data;
   },
 
-  // Create user (admin)
-  create: async (data: {
-    fullName: string;
-    email: string;
-    password: string;
-    role?: string;
-  }) => {
+  // Get all students
+  getAllStudents: async (params?: {
+    page?: number;
+    limit?: number;
+    fullName?: string;
+    email?: string;
+    verified?: boolean;
+  }): Promise<GetAllUsersResponse> => {
+    const res = await axios.get(endpoints.student.getAllStudents, { params });
+    console.log("API getAllStudents data:", res.data);
+    return res.data;
+  },
+  // getOne
+
+  getOne: async (id: string): Promise<{ msg: string; user: UserDetail }> => {
+    const res = await axios.get(endpoints.user.getOne(id));
+    return res.data;
+  },
+  create: async (data: User) => {
     const res = await axios.post(endpoints.user.create, data);
     return res.data;
   },
 
-  // Update user theo id (admin)
   update: async (id: string, data: Partial<User>) => {
     const res = await axios.put(endpoints.user.updateById(id), data);
     return res.data;
   },
+
 
   // Delete user theo id (admin)
   delete: async (id: string) => {

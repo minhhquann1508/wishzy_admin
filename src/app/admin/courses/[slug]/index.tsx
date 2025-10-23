@@ -217,14 +217,14 @@ const CourseDetailPage = () => {
   const handleLectureOk = async () => {
     try {
       const values = await lectureForm.validateFields();
-      const payload = {
+      const payload: LectureDto & { chapterSlug: string } = {
         lectureName: values.lectureName,
         description: values.description,
-        videoUrl: values.videoUrl,
         duration: values.duration,
         order: values.order,
         status: values.status,
         chapterSlug: selectedChapter!,
+        ...(values.videoUrl && { videoUrl: values.videoUrl }),
       };
 
       if (editingLecture) {
@@ -507,7 +507,7 @@ const CourseDetailPage = () => {
               onChange={({ fileList: newFileList, file }) => {
                 setVideoFileList(newFileList);
                 if (file.status === "done" && file.response) {
-                  lectureForm.setFieldValue("videoUrl", file.response.url);
+                  lectureForm.setFieldValue("videoUrl", file.response.data);
                 }
               }}
               onRemove={() => {

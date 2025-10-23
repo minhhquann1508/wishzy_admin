@@ -1,35 +1,59 @@
 import axios from "@/apis/axios";
 import { endpoints } from "@/apis/endpoints";
 
-// --- Định nghĩa kiểu dữ liệu --- //
+// ---------------- KIỂU DỮ LIỆU ---------------- //
 export interface Instructor {
   _id: string;
   fullName: string;
   email: string;
+  role: string; 
   avatar?: string;
-  role: "instructor";
+  phone?: string;
+  dob?: string;
+  gender?: string;
+  password?: string;
+  verified?: boolean;
   age?: number;
-  isInstructorActive: boolean;
-  createdAt: string;
+  createdAt?: string;
+  address?: string;
+  isInstructorActive?: boolean;
 }
 
-export interface Pagination {
-  currentPage: number;
-  totalPages: number;
-  pageSizes: number;
-  totalItems: number;
+export interface GetAllInstructorsResponse {
+  msg: string;
+  instructors: Instructor[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    pageSizes: number;
+    totalItems: number;
+  };
+}
+
+// Kiểu cho từng yêu cầu làm giảng viên
+export interface InstructorRequest {
+  _id: string;
+  fullName: string;
+  email: string;
+  requestedAt: string;
+  verified?: boolean;
 }
 
 export interface GetInstructorRequestsResponse {
   msg: string;
-  users: Instructor[];
-  pagination: Pagination;
+  requests: InstructorRequest[]; // sửa từ 'users' sang 'requests'
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    pageSizes: number;
+    totalItems: number;
+  };
 }
 
-export interface GetInstructorsResponse {
+
+export interface ApiResponse<T> {
   msg: string;
-  instructors: Instructor[];
-  pagination: Pagination;
+  data?: T;
 }
 
 export interface RequestInstructorPayload {
@@ -38,22 +62,22 @@ export interface RequestInstructorPayload {
   fullName: string;
 }
 
-export interface ApiResponse<T> {
-  msg: string;
-  data: T;
-}
-
-// --- Service --- //
+// ---------------- SERVICE ---------------- //
 export const InstructorService = {
-  // Lấy danh sách yêu cầu giảng viên
-  getRequests: async (page = 1, limit = 10): Promise<GetInstructorRequestsResponse> => {
-    const res = await axios.get(endpoints.instructor.getInstructorRequest, {
-      params: { page, limit },
-    });
-    return res.data;
-  },
+  getRequests: async (params?: {
+  page?: number;
+  limit?: number;
+  fullName?: string;
+  email?: string;
+}): Promise<GetInstructorRequestsResponse> => {
+  const res = await axios.get(endpoints.instructor.getInstructorRequest, { params });
+  console.log("API getRequests data:", res.data);
+  return {
+    ...res.data,
+    requests: res.data.users,
+  };
+},
 
-  // Gửi yêu cầu trở thành giảng viên
   createRequest: async (
     payload: RequestInstructorPayload
   ): Promise<ApiResponse<null>> => {
@@ -61,39 +85,31 @@ export const InstructorService = {
     return res.data;
   },
 
-  // Duyệt yêu cầu giảng viên
   approveRequest: async (id: string): Promise<ApiResponse<null>> => {
     const res = await axios.put(`${endpoints.instructor.approveInstructor}/${id}`);
     return res.data;
   },
 
-  // Từ chối yêu cầu giảng viên
   rejectRequest: async (id: string): Promise<ApiResponse<null>> => {
     const res = await axios.put(`${endpoints.instructor.rejectInstructor}/${id}`);
     return res.data;
   },
-
-  // Lấy danh sách giảng viên
-  getAll: async ({
-    page = 1,
-    limit = 10,
-  }: {
+  getAll: async (params?: {
     page?: number;
     limit?: number;
-  }): Promise<GetInstructorsResponse> => {
-    const res = await axios.get(endpoints.instructor.getAllInstructors, {
-      params: { page, limit },
-    });
+    fullName?: string;
+    email?: string;
+    isInstructorActive?: boolean;
+  }): Promise<GetAllInstructorsResponse> => {
+    const res = await axios.get(endpoints.instructor.getAllInstructors, { params });
     return res.data;
   },
-  
-  // Lấy chi tiết giảng viên
+
   getById: async (id: string): Promise<Instructor> => {
     const res = await axios.get(`${endpoints.instructor.getInstructorById}/${id}`);
     return res.data.instructor;
   },
 
-  // Huỷ yêu cầu làm giảng viên
   cancelRequest: async (id: string): Promise<ApiResponse<null>> => {
     const res = await axios.put(`${endpoints.instructor.cancelInstructorRequest}/${id}`);
     return res.data;
