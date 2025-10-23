@@ -70,8 +70,8 @@ const items: ItemType[] = [
     icon: <StickyNote size={16} />,
     children: [
       { key: "post", label: <Link to="/admin/posts">Danh sách bài viết</Link> },
-      { key: "post-category", label: <Link to="/admin/post-categories">Danh mục bài viết</Link> },
-      { key: "post-comment", label: <Link to="/admin/post-comments">Bình luận</Link> },
+      { key: "posts/post-category", label: <Link to="/admin/posts/post-category">Danh mục bài viết</Link> },
+      { key: "posts/post-comment", label: <Link to="/admin/posts/post-comments">Bình luận</Link> },
     ],
   },
   {
