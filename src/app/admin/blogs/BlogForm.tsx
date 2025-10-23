@@ -154,7 +154,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, slug, onSuccess }) => 
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Link to="/admin/blogs">
+          <Link to="/admin/posts">
             <Button
               type="default"
               icon={<ArrowLeftOutlined />}

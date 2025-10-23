@@ -20,12 +20,12 @@ const BlogEdit: React.FC = () => {
             setPost(res.post);
           } else {
             message.error("Không tìm thấy bài viết");
-            navigate("/admin/blogs");
+            navigate("/admin/posts");
           }
         })
         .catch(() => {
           message.error("Lỗi khi tải bài viết");
-          navigate("/admin/blogs");
+          navigate("/admin/posts");
         })
         .finally(() => setLoading(false));
     }
@@ -35,7 +35,7 @@ const BlogEdit: React.FC = () => {
 
   return (
     <div >
-      {post && <BlogForm initialData={post} slug={slug} onSuccess={() => navigate("/admin/blogs")} />}
+      {post && <BlogForm initialData={post} slug={slug} onSuccess={() => navigate("/admin/posts")} />}
     </div>
   );
 };
