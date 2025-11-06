@@ -1,6 +1,4 @@
-import React from 'react';
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
 import StatisticsChart from './charts/chart';
 
 const AdminDashboard = () => {
