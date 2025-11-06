@@ -406,7 +406,7 @@ const CoursePage = () => {
                   name="image"
                   listType="picture-card"
                   fileList={fileList}
-                  action="http://localhost:8000/api/upload/image"
+                  action="https://wishzy-be.onrender.com/api/upload/image"
                   onChange={({ fileList: newFileList, file }) => {
                     setFileList(newFileList);
                     if (file.status === 'done' && file.response) {

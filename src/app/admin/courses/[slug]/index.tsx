@@ -503,7 +503,7 @@ const CourseDetailPage = () => {
               name="video"
               listType="picture-card"
               fileList={videoFileList}
-              action="http://localhost:8000/api/upload/video"
+              action="https://wishzy-be.onrender.com/api/upload/video"
               onChange={({ fileList: newFileList, file }) => {
                 setVideoFileList(newFileList);
                 if (file.status === "done" && file.response) {
